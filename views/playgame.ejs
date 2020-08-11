@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.1.9/lib/p5.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="simplepeer.min.js"></script>
+
+</head>
+<input type="button" onclick="connect_to_random_player()">
+
+<body>
+
+
+  <table style="border:100px;" id="onlineplayers">
+    <th>online</th>
+
+  </table>
+  <script>
+    var hissokid
+    var hispos
+    var connected = false
+    var secplayer
+    var myposition = 0
+    myname = prompt("enter your name")
+    var init
+    var mypeerdata
+    var socket = io.connect()
+    socket.emit("addname", myname)
+
+    var peer =new SimplePeer({})
+    var temp
+
+    socket.on("conrandomplayers", initiator => {
+      init = initiator
+      console.log(init)
+      initialize()
+    })
+
+
+    socket.on("noonline", function () {
+      console.log("no one online")
+      alert("nooneonline");
+
+    })
+    
+function initialize(){
+
+  if(init!= undefined){
+    peer = new SimplePeer({
+      initiator:  init[1],
+      trickle: false,
+    })
+    
+    hissokid = init[0]
+    console.log("hisscok", hissokid)
+    console.log(init[1])
+    hissokid = init[0]
+  }
+}
+
+
+    
+  
+
+    peer.on('signal', function (data) {
+      console.log(data)
+      socket.emit('peerid', [data, hissokid])
+      temp = peer
+    })
+
+
+
+    peer.on("data", data => {
+      print(data)
+
+    })
+
+
+
+
+    socket.on("reciver", pid => {
+      peer.signal(pid)
+      console.log(pid)
+      connected = true
+
+    })
+
+    function connect_to_random_player() {
+      // socket.emit('peerid',data)      //get random plyer
+      console.log(temp)
+    }
+
+
+
+
+    function ball() {
+      circle(x, y, 30);
+      if (x > width - 15) {
+        speed = -2;
+      }
+      if (x < 15) {
+        speed = +2;
+      }
+      if (y > height - 15) {
+        speed2 = -5
+      }
+      if (y < 15) {
+        speed2 = 5
+      }
+      r = x;
+      b = y;
+      y = y + speed2;
+      x = x + speed;
+    }
+
+
+    var x = 0, speed = 5, y = 40, speed2 = 5;
+
+    function setup() {
+      createCanvas(400, 400);
+    }
+
+
+    function draw() {
+      if (connected) {
+        background(0);
+        fill(155);
+        player();
+        player2();
+        ball();
+        //  peer.send(myposition)
+      }
+    }
+
+
+    function player() {
+      rect(mouseX - 50, width - 10, 100, 10);
+
+      if (mouseX + 50 >= width) {
+        rect(width - 100, 490, 100, 10);
+      }
+      myposition = mouseX
+
+    }
+
+
+    function player2() {
+      rect(hispos - 50, 0, 100, 10);
+    }
+
+
+    socket.on("onlineplayers", onlineplayers => {
+      onlineplayers.forEach(player => {
+        document.getElementById("onlineplayers").innerHTML += "<tr><td id=" + player + ">" + player + "</td></tr>"
+      });
+    })
+    socket.on("playerdisconnected", playername => {
+
+      document.getElementById(playername).remove()
+
+    })
+    socket.on("everoneingame",()=>{
+      alert("every one is in the game")
+    })
+
+  </Script>
+</body>
+
+</html>
+
