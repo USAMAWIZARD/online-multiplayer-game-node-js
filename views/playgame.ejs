@@ -100,7 +100,14 @@
         player();
         player2();
         ball();
-        peer.send(myposition)
+        try{
+        peer.send(myposition)}
+        catch(e){alert("he disconected ");socket.emit("removemefromgame");
+        socket.emit("addname", myname)  
+        isconnected=false
+        loadjs()
+
+      }
       }
     }
 

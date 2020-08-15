@@ -64,11 +64,17 @@ io.on("connection",function(socket){
 
 
   socket.on("disconnect",function(){
+    if(onlineplayers[socket.id]!=undefined)
+    {
     socket.broadcast.emit("playerdisconnected",onlineplayers[socket.id])
     console.log(onlineplayers[socket.id],"discondectd")
     delete  onlineplayers[socket.id]
     ingame.splice(socket.id)
-    })
+    }
+  })
+  socket.on("removemefromgame",function(){
+    ingame.splice(socket.id)
+  })
 
 
     })
