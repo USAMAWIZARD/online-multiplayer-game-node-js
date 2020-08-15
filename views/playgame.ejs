@@ -8,9 +8,11 @@
   <script src="https://cdn.jsdelivr.net/npm/p5@1.1.9/lib/p5.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="simplepeer.min.js"></script>
+  <script src="socket.js"></script>
 
 </head>
 <input type="button" onclick="connect_to_random_player()">
+
 
 <body>
 
@@ -22,7 +24,7 @@
   <script>
     var hissokid
     var hispos
-    var connected = false
+    var isconnected = false
     var secplayer
     var myposition = 0
     myname = prompt("enter your name")
@@ -31,13 +33,13 @@
     var socket = io.connect()
     socket.emit("addname", myname)
 
-    var peer =new SimplePeer({})
+    var peer = new SimplePeer({})
     var temp
 
     socket.on("conrandomplayers", initiator => {
-      init = initiator
-      console.log(init)
-      initialize()
+      hissokid = initiator[0]
+      init= initiator[1]
+      loadjs()
     })
 
 
@@ -46,48 +48,14 @@
       alert("nooneonline");
 
     })
-    
-function initialize(){
 
-  if(init!= undefined){
-    peer = new SimplePeer({
-      initiator:  init[1],
-      trickle: false,
-    })
-    
-    hissokid = init[0]
-    console.log("hisscok", hissokid)
-    console.log(init[1])
-    hissokid = init[0]
-  }
-}
+
 
 
     
-  
-
-    peer.on('signal', function (data) {
-      console.log(data)
-      socket.emit('peerid', [data, hissokid])
-      temp = peer
-    })
 
 
 
-    peer.on("data", data => {
-      print(data)
-
-    })
-
-
-
-
-    socket.on("reciver", pid => {
-      peer.signal(pid)
-      console.log(pid)
-      connected = true
-
-    })
 
     function connect_to_random_player() {
       // socket.emit('peerid',data)      //get random plyer
@@ -126,13 +94,13 @@ function initialize(){
 
 
     function draw() {
-      if (connected) {
+      if (isconnected) {
         background(0);
         fill(155);
         player();
         player2();
         ball();
-        //  peer.send(myposition)
+        peer.send(myposition)
       }
     }
 
@@ -163,12 +131,22 @@ function initialize(){
       document.getElementById(playername).remove()
 
     })
-    socket.on("everoneingame",()=>{
+    socket.on("everoneingame", () => {
       alert("every one is in the game")
     })
+
+    function loadjs() {
+
+    var jsElm = document.createElement("script");
+    // set the type attribute
+    jsElm.type = "application/javascript";
+    // make the script element load file
+    jsElm.src = "peerconnection.js";
+    // finally insert the element to the body element in order to load the script
+    document.body.appendChild(jsElm);
+}
 
   </Script>
 </body>
 
 </html>
-

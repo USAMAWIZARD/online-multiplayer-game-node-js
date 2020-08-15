@@ -20,14 +20,14 @@ onlineplayers={}
 ingame=[]
 
 io.on("connection",function(socket){
-  socket.emit("onlineplayers",Object.values(onlineplayers))
 
+
+  socket.emit("onlineplayers",Object.values(onlineplayers))
   socket.on("addname",myname=>{
 
     console.log(myname,socket.id)
     onlineplayers[String(socket.id)]=myname
     socket.broadcast.emit("onlineplayers",[onlineplayers[socket.id]])
-
     if(Object.keys(onlineplayers).length>1)
     {
     onlinebutnotingame = Object.keys(onlineplayers).filter(x => !ingame.includes(x) );   //selecting a random player from the array
@@ -58,12 +58,14 @@ io.on("connection",function(socket){
   
   //geting random players from online array
   socket.on("peerid",socandpeer=>{
+    console.log(socandpeer[1])
     socket.to(socandpeer[1]).emit("reciver",socandpeer[0])
   })
 
 
   socket.on("disconnect",function(){
     socket.broadcast.emit("playerdisconnected",onlineplayers[socket.id])
+    console.log(onlineplayers[socket.id],"discondectd")
     delete  onlineplayers[socket.id]
     ingame.splice(socket.id)
     })
@@ -72,9 +74,6 @@ io.on("connection",function(socket){
     })
 
 server.get('/',function(req,res){
-res.render('playgame.ejs')
-})
-server.get('/quran',function(req,res){
-res.render('quran.ejs')
 
+res.render('playgame.ejs')
 })
