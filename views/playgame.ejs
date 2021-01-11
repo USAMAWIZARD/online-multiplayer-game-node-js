@@ -9,18 +9,19 @@
   <script src="/socket.io/socket.io.js"></script>
   <script src="simplepeer.min.js"></script>
   <script src="socket.js"></script>
+  <link rel="stylesheet" href="index.css">
 
 </head>
-<input type="button" onclick="connect_to_random_player()">
+<!-- <input type="button" onclick="connect_to_random_player()"> -->
 
 
 <body>
 
-
+  <h1>Ping Pong</h1>
   <table style="border:100px;" id="onlineplayers">
-    <th>online</th>
-
+    <th class="online">ONLINE</th>
   </table>
+
   <script>
     var hissokid
     var hispos
